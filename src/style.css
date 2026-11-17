@@ -48,3 +48,5 @@
 [data-theme="dark"] .authError,[data-theme="dark"] em{color:#ffb7ae}
 [data-theme="dark"] .primary{background:#2e6cbe;border-color:#2e6cbe;color:#fff}
 @media(max-width:560px){.themeToggle span{display:none}.themeToggle{padding:8px}.headerRight{gap:6px}}
+
+.githubLink{margin-left:auto;color:#fff;display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700}.githubLink:hover{text-decoration:underline}.githubLink .material-symbols-outlined{font-size:20px}.barinner{justify-content:flex-end}@media(max-width:850px){.footer .githubLink{width:auto;margin-left:0}}
