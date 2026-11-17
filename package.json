@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "vite build --base /Conexao-Rural/",
-    "preview": "vite preview --host 0.0.0.0"
+    "preview": "vite preview --host 0.0.0.0 --base /Conexao-Rural/"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.119.0",
