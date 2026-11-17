@@ -19,3 +19,7 @@ O resultado deve mostrar uma linha e `administrador`. O login e a senha são os 
 6. Teste com contas distintas de agricultor, atendente de um setor e administrador, em navegadores separados. Verifique que o agricultor só vê seus requerimentos e que o atendente só acessa os setores atribuídos. Teste a troca de setor, mensagens, anexos e foto. Teste também acessos indevidos por chamadas diretas à API, não apenas pela interface.
 
 A gravação é feita no navegador e fica anexada. A transcrição depende da API de reconhecimento de voz e não está disponível em todos os navegadores. O login por telefone não foi integrado: exige configuração e contratação de provedor de SMS. A função de atendentes e as políticas não foram executadas ou verificadas em um projeto Supabase real neste ambiente.
+
+## Atualizações posteriores para instalações existentes
+
+Execute, nesta ordem, apenas as migrações ainda não aplicadas: `20261117_cadastro_permissoes.sql`, `20261117_editar_excluir_conta.sql`, `20261117_situacao_recusado.sql` e `20261117_bloquear_respostas_encerradas.sql`. As funções de servidor necessárias são `criar-atendente`, `alterar-email`, `excluir-agricultor` e `excluir-atendente`. Para publicar pelo painel, crie uma função com o nome indicado e cole o conteúdo do respectivo arquivo `index.ts` no arquivo `index.ts` do editor. A nova função de exclusão de atendentes só aceita administradores, preserva o histórico e depende da migração de edição/exclusão já instalada.

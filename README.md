@@ -1,24 +1,48 @@
 # Conexão Rural
 
-Aplicação React para registrar e acompanhar requerimentos das comunidades rurais. O Supabase fornece autenticação, dados e armazenamento de arquivos.
+O Conexão Rural é um projeto acadêmico para facilitar o contato entre agricultores e a equipe responsável pelo atendimento às comunidades rurais de Santa Cruz do Capibaribe, Pernambuco.
 
-## Desenvolvimento
+**Acesse o site:** [rvero.github.io/Conexao-Rural](https://rvero.github.io/Conexao-Rural/)
 
-Instale as dependências com `npm install`, crie um arquivo `.env.local` e execute `npm run dev`:
+## Como funciona
+
+- **Agricultor:** cria uma conta, envia requerimentos, acompanha o andamento e troca mensagens enquanto o pedido estiver aberto. Pode anexar fotos, documentos e gravações, além de editar ou excluir a própria conta.
+- **Atendente:** acompanha os setores autorizados, responde aos pedidos, encaminha para outro assunto e atualiza a situação. Pode adicionar uma foto de perfil.
+- **Administrador:** acompanha os requerimentos, cadastra e exclui atendentes, define o acesso aos setores e pode excluir contas de agricultores.
+
+Um requerimento concluído ou recusado mantém seu histórico disponível para consulta, mas não aceita novas mensagens enquanto estiver encerrado. Áudios são anexados e a transcrição depende do reconhecimento de voz do navegador e da conexão.
+
+## Tecnologias
+
+A interface usa React, Vite, CSS, Roboto e ícones do Google. O Supabase cuida da autenticação por e-mail e senha, banco PostgreSQL, armazenamento privado e funções de servidor. O GitHub Actions publica a versão compilada no GitHub Pages. O endereço é consultado pelo ViaCEP.
+
+## Rodar no computador
+
+Instale o Node.js e execute:
+
+```bash
+npm install
+npm run dev
+```
+
+Crie `.env.local` na raiz com os dados públicos do projeto Supabase:
 
 ```env
 VITE_SUPABASE_URL=https://seu-projeto.supabase.co
 VITE_SUPABASE_PUBLISHABLE_KEY=sua_chave_publica
 ```
 
-O arquivo de ambiente não deve conter chaves secretas. A chave pública é disponibilizada ao navegador; as regras de acesso do Supabase devem proteger os dados.
+A chave pública fica disponível no navegador; chaves secretas nunca devem ser colocadas no frontend ou no repositório. As regras de acesso no Supabase protegem os dados. Rode `node --test test/*.test.js` e `npm run build` para verificar as alterações.
 
-## Configuração do Supabase
+## Organização
 
-As instruções para criar as tabelas, as regras de acesso, o armazenamento e o primeiro administrador estão em [supabase/INSTRUCOES.md](supabase/INSTRUCOES.md). O script é para instalação inicial e não deve ser executado novamente sobre uma instalação existente. A criação de atendentes usa a Edge Function `criar-atendente`.
+- `src/`: telas, componentes e comunicação com Supabase.
+- `public/`: arquivos públicos e favicon.
+- `supabase/`: esquema inicial, migrações e funções de servidor.
+- `test/`: testes automatizados.
+- `docs/`: guia ilustrado e imagens.
+- `.github/workflows/`: publicação automática no GitHub Pages.
 
-A gravação de áudio depende da permissão do navegador, e a transcrição usa a API de reconhecimento de voz quando disponível. O login por telefone requer provedor de SMS e ainda não está implementado.
+Veja [as instruções do Supabase](supabase/INSTRUCOES.md) e o [guia ilustrado](docs/Guia-Conexao-Rural.pdf). Para um banco existente, aplique somente as migrações ainda não executadas; não execute o esquema inicial novamente. A exclusão de contas exige as Edge Functions correspondentes publicadas.
 
-## Publicação
-
-O GitHub Actions compila e publica no GitHub Pages ao receber alterações na branch `main`. Em Settings > Pages, selecione GitHub Actions como fonte. A aplicação está configurada para o caminho `/Conexao-Rural/`. Configure no Supabase Authentication a URL do site e os redirecionamentos.
+O acesso por telefone não foi integrado. Com a confirmação de e-mail desativada para o projeto acadêmico, não há comprovação de que o usuário controla o endereço informado.
