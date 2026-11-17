@@ -1,5 +1,6 @@
 import { supabase } from './supabaseClient';
 import { insertRequest } from './requestInsert';
+import { decodeAttachment, sendReply } from './replyAttachments';
 
 function check(result) { if (result.error) throw result.error; return result.data; }
 const date = value => new Date(value).toLocaleDateString('pt-BR');
@@ -15,7 +16,10 @@ export async function loadDashboard(userId) {
   ]);
   const profile=check(profileResult), requests=check(requestResult), messages=check(messageResult), attachments=check(attachmentResult), profiles=check(profileListResult), sectors=check(sectorsResult);
   const people=Object.fromEntries(await Promise.all(profiles.map(async p=>[p.id,{...p,photo:await signed('perfis',p.foto_caminho)}])));
-  const mapped=await Promise.all(requests.map(async r=>({id:r.id,title:r.titulo,body:r.corpo,category:r.setor,community:r.comunidade,kind:r.tipo,status:r.situacao,date:date(r.criado_em),name:people[r.autor_id]?.nome || 'Conta excluída',messages:messages.filter(m=>m.requerimento_id===r.id).map(m=>({id:m.id,name:people[m.autor_id]?.nome || 'Conta excluída',photo:people[m.autor_id]?.photo,text:m.corpo,date:date(m.criado_em)})),files:(await Promise.all(attachments.filter(a=>a.requerimento_id===r.id).map(async a=>({name:a.nome,data:await signed('requerimentos',a.caminho)})))).filter(a=>a.data)})));
+  const mapped=await Promise.all(requests.map(async r=>{
+    const files=(await Promise.all(attachments.filter(a=>a.requerimento_id===r.id).map(async a=>({...decodeAttachment(a.nome),data:await signed('requerimentos',a.caminho)})))).filter(a=>a.data);
+    return {id:r.id,title:r.titulo,body:r.corpo,category:r.setor,community:r.comunidade,kind:r.tipo,status:r.situacao,date:date(r.criado_em),name:people[r.autor_id]?.nome || 'Conta excluída',messages:messages.filter(m=>m.requerimento_id===r.id).map(m=>({id:m.id,name:people[m.autor_id]?.nome || 'Conta excluída',photo:people[m.autor_id]?.photo,text:m.corpo,date:date(m.criado_em),files:files.filter(f=>f.messageId?.toLowerCase()===m.id.toLowerCase())})),files:files.filter(f=>!f.messageId)};
+  }));
   return {profile, items:mapped, staff:profiles.filter(p=>p.papel==='atendente').map(p=>({id:p.id,name:p.nome,sectors:sectors.filter(s=>s.usuario_id===p.id).map(s=>s.setor)})), farmers:profiles.filter(p=>p.papel==='agricultor').map(p=>({id:p.id,name:p.nome})), photo:people[userId]?.photo, assignedSectors:sectors.filter(s=>s.usuario_id===userId).map(s=>s.setor)};
 }
 export async function createRequest(userId, form) {
@@ -29,7 +33,7 @@ export async function createRequest(userId, form) {
  return id;
 }
 export async function updateRequest(id, patch) { const values={}; if(patch.category)values.setor=patch.category;if(patch.status)values.situacao=patch.status;check(await supabase.from('requerimentos').update(values).eq('id',id)); }
-export async function createMessage(id,userId,text) {check(await supabase.from('mensagens').insert({requerimento_id:id,autor_id:userId,corpo:text}));}
+export async function createMessage(id,userId,text,files=[]) {return sendReply(supabase,id,userId,text,files);}
 export async function uploadPhoto(userId,file) {const path=`${userId}/${crypto.randomUUID()}`;check(await supabase.storage.from('perfis').upload(path,file,{contentType:file.type}));check(await supabase.from('perfis').update({foto_caminho:path}).eq('id',userId));}
 export async function createStaff(person) {const {data,error}=await supabase.functions.invoke('criar-atendente',{body:{nome:person.name,login:person.email,senha:person.password,setores:person.sectors}});if(error)throw error;return data;}
 
