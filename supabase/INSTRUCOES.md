@@ -4,7 +4,7 @@ Esta versão depende de tabelas e políticas no Supabase. Não publique o códig
 
 1. No painel do Supabase, em Authentication > Sign In / Providers > Email, desative a confirmação de e-mail (Confirm email). Assim, novos usuários podem entrar sem receber mensagens. Para um projeto de faculdade use dados fictícios; com a confirmação desativada, o sistema não comprova que o usuário controla o endereço.
 2. No SQL Editor, abra uma nova consulta e execute o conteúdo inteiro de `supabase/schema.sql` em um projeto novo. O script cria perfis, setores, requerimentos, mensagens, anexos, regras RLS e dois buckets privados. Ele faz uma única transação e não é um script para reaplicar em uma base já configurada.
-3. Execute também `supabase/migrations/20261117_cadastro_permissoes.sql` no SQL Editor. Essa atualização adiciona endereço aos perfis e restringe a criação de requerimentos a agricultores. Não execute o schema inicial novamente em um projeto já configurado.
+3. Execute também `supabase/migrations/20261117_cadastro_permissoes.sql` no SQL Editor. Essa atualização adiciona endereço, CEP, rua, bairro, número, cidade e estado aos perfis e restringe a criação de requerimentos a agricultores. O cadastro valida o município consultando o ViaCEP; para garantir essa validação contra chamadas diretas à API é necessário validá-la também no servidor. Não execute o schema inicial novamente em um projeto já configurado.
 4. Crie uma conta pessoal no site e, em Authentication > Users, localize o UUID da conta. No SQL Editor, execute o comando abaixo substituindo apenas o UUID pelo da conta escolhida:
 
 ```sql

@@ -1,0 +1,7 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { formatCep, lookupCep, formatAddress } from '../src/cep.js';
+test('formata o CEP limitado a oito dígitos',()=>{assert.equal(formatCep('123456789'),'12345-678');assert.equal(formatCep('12.345'),'12345')});
+test('busca CEP de Santa Cruz do Capibaribe em Pernambuco',async()=>{let url;const result=await lookupCep('55192-000',async u=>(url=u,{ok:true,json:async()=>({logradouro:'Rua A',bairro:'Centro',localidade:'Santa Cruz do Capibaribe',uf:'PE'})}));assert.equal(url,'https://viacep.com.br/ws/55192000/json/');assert.deepEqual(result,{street:'Rua A',neighborhood:'Centro',city:'Santa Cruz do Capibaribe',state:'PE'});});
+test('recusa CEP inválido, inexistente, de outra cidade ou falha de serviço',async()=>{await assert.rejects(()=>lookupCep('123',()=>{}),/8 dígitos/);await assert.rejects(()=>lookupCep('99999999',async()=>({ok:true,json:async()=>({erro:true})})),/não encontrado/);await assert.rejects(()=>lookupCep('01001000',async()=>({ok:true,json:async()=>({localidade:'São Paulo',uf:'SP'})})),/Santa Cruz do Capibaribe/);await assert.rejects(()=>lookupCep('55192000',async()=>({ok:false})),/consultar/)});
+test('monta o endereço com número opcional',()=>{const a={street:'Rua A',neighborhood:'Centro',city:'Santa Cruz do Capibaribe',state:'PE'};assert.equal(formatAddress(a,'','55192-000'),'Rua A, Centro, Santa Cruz do Capibaribe - PE, CEP 55192-000');assert.equal(formatAddress(a,'12','55192-000'),'Rua A, nº 12, Centro, Santa Cruz do Capibaribe - PE, CEP 55192-000')});

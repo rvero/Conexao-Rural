@@ -6,7 +6,12 @@ export async function submitEmailAuth(client, mode, email, password, profile = {
     const endereco = (profile.endereco || '').trim();
     if (!nome) throw new Error('Informe seu nome.');
     if (!endereco) throw new Error('Informe seu endereço.');
-    credentials.options = { data: { nome, endereco } };
+    const detalhes = profile.detalhes || {};
+    const data = { nome, endereco };
+    for (const key of ['cep', 'logradouro', 'bairro', 'numero', 'cidade', 'uf']) {
+      if (typeof detalhes[key] === 'string') data[key] = detalhes[key].trim();
+    }
+    credentials.options = { data };
   }
   const { data, error } = mode === 'signup'
     ? await client.auth.signUp(credentials)

@@ -56,3 +56,5 @@
 .staffChecks{margin-top:10px}.staffChecks label{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:400}.staffChecks input{width:auto}
 
 .topinner .themeToggle{border:0;border-radius:4px;padding:3px;color:#174d7b;line-height:1}.topinner .themeToggle .material-symbols-outlined{font-size:19px}[data-theme="dark"] .topinner .themeToggle{background:transparent;color:#d4e9ff!important}@media(max-width:560px){.topinner .themeToggle{display:inline-flex}}
+
+.addressFields{gap:14px}.addressFields label small{font-weight:400}.addressFields input[readonly]{background:#edf2f5;color:#354e60}.addressFields .authError{margin:0}.addressFields .muted{font-size:12px}[data-theme="dark"] .addressFields input[readonly]{background:#263844;color:#e3edf3}.primary:disabled{opacity:.6;cursor:not-allowed}
