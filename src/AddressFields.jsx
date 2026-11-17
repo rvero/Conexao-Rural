@@ -25,11 +25,9 @@ export default function AddressFields({ onChange }) {
   <label>CEP<input required inputMode="numeric" autoComplete="postal-code" placeholder="00000-000" value={cep} onChange={e=>setCep(formatCep(e.target.value))} maxLength="9" aria-describedby="cep-status"/></label>
   <div id="cep-status" role="status" className={status==='error'?'authError':'muted'}>{status==='loading'?'Consultando CEP...':error || 'Informe um CEP de Santa Cruz do Capibaribe, PE.'}</div>
   {status==='error'&&<button type="button" className="textButton" onClick={()=>setRetry(x=>x+1)}>Tentar consultar novamente</button>}
-  {address&&<>
-   <label>Rua<input required value={address.street} readOnly={!missing.street} autoComplete="address-line1" onChange={e=>setAddress({...address,street:e.target.value})}/>{missing.street&&<small>O CEP não informou a rua. Preencha este campo.</small>}</label>
-   <label>Bairro<input required value={address.neighborhood} readOnly={!missing.neighborhood} onChange={e=>setAddress({...address,neighborhood:e.target.value})}/>{missing.neighborhood&&<small>O CEP não informou o bairro. Preencha este campo.</small>}</label>
-   <label>Cidade / Estado<input readOnly value={`${address.city} - ${address.state}`}/></label>
-   <label>Número <small>(opcional)</small><input value={number} maxLength="30" autoComplete="address-line2" onChange={e=>setNumber(e.target.value)} placeholder="Número da residência"/></label>
-  </>}
+  <label>Rua<input required value={address?.street || ''} readOnly={!address||!missing.street} placeholder="Preenchido pelo CEP" autoComplete="off" onChange={e=>setAddress({...address,street:e.target.value})}/>{address&&missing.street&&<small>O CEP não informou a rua. Preencha este campo.</small>}</label>
+  <label>Bairro<input required value={address?.neighborhood || ''} readOnly={!address||!missing.neighborhood} placeholder="Preenchido pelo CEP" autoComplete="off" onChange={e=>setAddress({...address,neighborhood:e.target.value})}/>{address&&missing.neighborhood&&<small>O CEP não informou o bairro. Preencha este campo.</small>}</label>
+  <label>Número <small>(opcional)</small><input value={number} maxLength="30" autoComplete="off" onChange={e=>setNumber(e.target.value)} placeholder="Número da residência"/></label>
+  <label>Cidade / Estado<input readOnly value={address?`${address.city} - ${address.state}`:''} placeholder="Preenchido pelo CEP"/></label>
  </div>;
 }
