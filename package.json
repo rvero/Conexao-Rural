@@ -1,0 +1,17 @@
+{
+  "name": "conexao-rural",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build --base /Conexao-Rural/",
+    "preview": "vite preview --host 0.0.0.0"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.119.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router-dom": "^7.0.0",
+    "vite": "^7.0.0"
+  }
+}
