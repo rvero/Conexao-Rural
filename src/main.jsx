@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import './style.css';
 import { supabase } from './supabaseClient';
 import { submitEmailAuth } from './emailAuth';
+import { createSpeechTranscriber } from './speech';
 import Dashboard from './Dashboard';
 import AddressFields from './AddressFields';
 import { isHomePath } from './dashboardModel';
@@ -36,22 +37,18 @@ function App(){
  async function audio(){
   if(recording){if(recorder?.state==='recording')recorder.stop();setRecording(false);return}
   if(audioBusy)return;
-  setAudioBusy(true);setNotice('');
+  setAudioBusy(true);setNotice('');let speech=null;
   try{
    if(!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder)throw new Error('A gravação de áudio não está disponível neste navegador.');
    const stream=await navigator.mediaDevices.getUserMedia({audio:true});let rec;
    try{rec=new MediaRecorder(stream)}catch(error){stream.getTracks().forEach(t=>t.stop());throw error}
    const chunks=[];rec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
-   rec.onstop=()=>{stream.getTracks().forEach(t=>t.stop());const blob=new Blob(chunks,{type:rec.mimeType||'audio/webm'});if(!blob.size){setNotice('Não foi possível salvar o áudio. Grave novamente.');setAudioBusy(false);return}const reader=new FileReader();reader.onload=()=>{const ext=blob.type.includes('mp4')?'m4a':blob.type.includes('ogg')?'ogg':'webm';setForm(f=>({...f,files:[...f.files,{name:`gravacao-${Date.now()}.${ext}`,data:reader.result}]}));setAudioBusy(false)};reader.onerror=()=>{setNotice('Não foi possível salvar o áudio. Grave novamente.');setAudioBusy(false)};reader.readAsDataURL(blob)};
-   rec.onerror=()=>{stream.getTracks().forEach(t=>t.stop());setRecording(false);setAudioBusy(false);setNotice('A gravação falhou. Tente novamente.')};
+   rec.onstop=async()=>{stream.getTracks().forEach(t=>t.stop());const transcription=speech?speech.stop():Promise.resolve(false);try{const blob=new Blob(chunks,{type:rec.mimeType||'audio/webm'});if(!blob.size)throw new Error('Não foi possível salvar o áudio. Grave novamente.');const data=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(new Error('Não foi possível salvar o áudio.'));reader.readAsDataURL(blob)});const ext=blob.type.includes('mp4')?'m4a':blob.type.includes('ogg')?'ogg':'webm';setForm(f=>({...f,files:[...f.files,{name:`gravacao-${Date.now()}.${ext}`,data}]}));const heard=await transcription;if(speech&&!heard)setNotice('O áudio foi anexado, mas nenhuma fala foi reconhecida. Confira a conexão e o microfone ou digite a descrição.')}catch(error){setNotice(error.message||'Não foi possível salvar o áudio.')}finally{setAudioBusy(false)}};
+   rec.onerror=()=>{stream.getTracks().forEach(t=>t.stop());if(speech)speech.stop();setRecording(false);setAudioBusy(false);setNotice('A gravação falhou. Tente novamente.')};
    rec.start();setRecorder(rec);setRecording(true);
    const Speech=window.SpeechRecognition||window.webkitSpeechRecognition;
    if(!Speech){setNotice('O áudio será anexado, mas este navegador não oferece transcrição automática. Digite a descrição.');return}
-   try{const speech=new Speech();speech.lang='pt-BR';speech.continuous=true;speech.interimResults=false;
-    speech.onresult=e=>{let parts=[];for(let i=e.resultIndex;i<e.results.length;i++)if(e.results[i].isFinal)parts.push(e.results[i][0].transcript.trim());if(parts.length)setForm(f=>({...f,body:[f.body.trim(),parts.join(' ')].filter(Boolean).join(' ')}))};
-    speech.onerror=()=>setNotice('A transcrição automática falhou ou foi interrompida. O áudio continua sendo gravado; digite ou corrija a descrição.');
-    speech.start();rec.addEventListener('stop',()=>{try{speech.stop()}catch{}});
-   }catch{setNotice('Não foi possível iniciar a transcrição. O áudio continua sendo gravado; digite a descrição.')}
+   speech=createSpeechTranscriber(Speech,{onText:text=>setForm(f=>({...f,body:[f.body.trim(),text].filter(Boolean).join(' ')})),onError:()=>setNotice('A transcrição não está disponível ou foi interrompida. Verifique a internet e o microfone; o áudio continua sendo gravado.')});speech.start();
   }catch(error){setAudioBusy(false);setRecording(false);setNotice(error.name==='NotAllowedError'?'Permita o uso do microfone para gravar.':(error.message||'Não foi possível iniciar a gravação.'))}
  }
  function fileChange(e){Array.from(e.target.files).forEach(file=>{let r=new FileReader();r.onload=()=>setForm(f=>({...f,files:[...f.files,{name:file.name,data:r.result}]}));r.readAsDataURL(file)})}
