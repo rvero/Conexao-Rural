@@ -40,3 +40,18 @@ VITE_SUPABASE_PUBLISHABLE_KEY=sua_chave_publica
 - `test/`: testes automatizados.
 - `docs/`: guia ilustrado e imagens.
 - `.github/workflows/`: publicação automática no GitHub Pages.
+
+Dennys Gabriel Ezequiel de Oliveira
+Matrícula:01806494
+
+Guilherme da Silva Marano
+Matrícula:01818473
+
+Gustavo Rodrigues Teixeira
+Matrícula:01672067
+
+Malcolm Barros Silva
+Matrícula:01793375
+
+Sérgio Veloso Cavalcanti
+Matrícula:01796288
