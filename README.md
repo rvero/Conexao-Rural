@@ -1,4 +1,4 @@
-# Conexão Rural 
+# Conexão Rural
 
 O Conexão Rural é um projeto acadêmico para facilitar o contato entre agricultores e a equipe responsável pelo atendimento às comunidades rurais de Santa Cruz do Capibaribe, Pernambuco.
 
