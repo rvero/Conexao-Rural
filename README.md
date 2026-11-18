@@ -32,8 +32,6 @@ VITE_SUPABASE_URL=https://seu-projeto.supabase.co
 VITE_SUPABASE_PUBLISHABLE_KEY=sua_chave_publica
 ```
 
-A chave pública fica disponível no navegador; chaves secretas nunca devem ser colocadas no frontend ou no repositório. As regras de acesso no Supabase protegem os dados. Rode `node --test test/*.test.js` e `npm run build` para verificar as alterações.
-
 ## Organização
 
 - `src/`: telas, componentes e comunicação com Supabase.
@@ -42,7 +40,3 @@ A chave pública fica disponível no navegador; chaves secretas nunca devem ser 
 - `test/`: testes automatizados.
 - `docs/`: guia ilustrado e imagens.
 - `.github/workflows/`: publicação automática no GitHub Pages.
-
-Veja [as instruções do Supabase](supabase/INSTRUCOES.md) e o [guia ilustrado](docs/Guia-Conexao-Rural.pdf). Para um banco existente, aplique somente as migrações ainda não executadas; não execute o esquema inicial novamente. A exclusão de contas exige as Edge Functions correspondentes publicadas.
-
-O acesso por telefone não foi integrado. Com a confirmação de e-mail desativada para o projeto acadêmico, não há comprovação de que o usuário controla o endereço informado.
